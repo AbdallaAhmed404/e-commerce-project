@@ -90,10 +90,9 @@ const resetPassword = async (req, res, next) => {
             return res.status(400).json({ message: "Invalid code" });
         }
 
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        user.password = hashedPassword;
+        user.password = newPassword; 
         user.resetCode = undefined;
-        await user.save();
+        await user.save(); 
 
         res.status(200).json({ message: "Password has been reset successfully" });
     } catch (err) {
@@ -101,6 +100,7 @@ const resetPassword = async (req, res, next) => {
         next(customError({ statusCode: 500, message: "Error resetting password" }));
     }
 };
+
 
 
 const AllProduct = async (req, res, next) => {
