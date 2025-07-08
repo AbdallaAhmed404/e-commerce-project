@@ -56,14 +56,12 @@ const DelUser = async (req, res, next) => {
 const AddProduct = async (req, res, next) => {
     try {
         const newProduct = await ProductModel.create({
-            id: req.body.id,
             name: req.body.name,
             price: req.body.price,
             title: req.body.title,
             rate: req.body.rate,
             photo: req.body.photo,
             discount: req.body.discount,
-            soldCount: req.body.soldCount,
             description: req.body.description,
             category: req.body.category
         })
