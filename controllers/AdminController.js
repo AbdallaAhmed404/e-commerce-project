@@ -119,6 +119,7 @@ const DeleteProduct = async (req, res, next) => {
     try {
         const id = req.body.id;
         const product = await ProductModel.findOne({ id: id });
+        console.log(product)
         if (!product) return res.status(404).send('Product not found')
         await ProductModel.findOneAndDelete({ id: id })
         res.status(200).json({ message: "Product deleted successfully" });
