@@ -3,7 +3,7 @@ const __ = require('lodash')
 
 const ProductSchema = new mongoose.Schema(
     {
-        id: { type: String, required: true, unique: true },
+        id: { type: String, unique: true },
         name: { type: String, required: true },
         price: { type: String, required: true },
         title: { type: String },

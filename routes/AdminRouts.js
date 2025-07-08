@@ -9,7 +9,7 @@ AdminRouter.get('/AllUsers',isAdmin, AllUsers);
 
 AdminRouter.delete('/deluser',isAdmin, DelUser);
 
-AdminRouter.post('/addproduct',isAdmin, AddProduct);
+AdminRouter.post('/addproduct', AddProduct);
 
 AdminRouter.get('/allproduct',isAdmin, AllProduct);
 
