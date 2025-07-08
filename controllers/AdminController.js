@@ -117,7 +117,7 @@ const UpdateProduct = async (req, res, next) => {
 
 const DeleteProduct = async (req, res, next) => {
     try {
-        const id = String(req.body.id);
+        const id = req.body.id;
         const product = await ProductModel.findOne({ id: id });
         console.log(product)
         if (!product) return res.status(404).send('Product not found')
