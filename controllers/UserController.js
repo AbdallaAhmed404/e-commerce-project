@@ -34,7 +34,7 @@ const login = async (req, res, next) => {
         const isValidPassword = await bcrypt.compare(req.body.password, user.password)
         if (!isValidPassword) return res.status(400).send("invalid password")
         const token = await user.generatetoken();
-        res.status(200).json({ message: "successful", token: token });
+        res.status(200).json({ userID:user._id, token: token });
     } catch (err) {
         console.error("Login error:", err);
         return next(customError({
