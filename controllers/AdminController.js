@@ -132,6 +132,19 @@ const DeleteProduct = async (req, res, next) => {
     }
 }
 
+const getProductsSortedBySoldCount = async (req, res, next) => {
+    try {
+        const sortedProducts = await ProductModel.find({}).sort({ soldCount: -1 });
+        res.status(200).json(sortedProducts);
+    } catch (err) {
+        console.error("Error sorting products:", err);
+        return next(customError({
+            statusCode: 500,
+            message: "Failed to sort products"
+        }));
+    }
+};
+
 module.exports = {
     adminLogin,
     AllUsers,
@@ -139,5 +152,6 @@ module.exports = {
     AddProduct,
     AllProduct,
     UpdateProduct,
-    DeleteProduct
+    DeleteProduct,
+    getProductsSortedBySoldCount
 };
