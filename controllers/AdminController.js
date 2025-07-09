@@ -1,25 +1,101 @@
 const UserModel = require('../models/UserModel')
 const ProductModel = require("../models/ProductModel")
+const AdminModel = require('../models/AdminModel');
+const bcrypt = require('bcryptjs');
 const customError = require('../customError');
 const jwt = require('jsonwebtoken');
 
+const adminRegister = async (req, res, next) => {
+    try {
+        const { email, password, confirmPassword } = req.body;
+
+        if (!email || !password || !confirmPassword) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        if (password !== confirmPassword) {
+            return res.status(400).json({ message: "Passwords do not match" });
+        }
+
+        const exists = await AdminModel.findOne({ email });
+        if (exists) {
+            return res.status(400).json({ message: "Admin already exists" });
+        }
+
+        const newAdmin = new AdminModel({ email, password });
+        await newAdmin.save();
+
+        res.status(201).json({
+            message: "Admin registered successfully",
+        });
+
+    } catch (err) {
+        console.error("Admin register error:", err);
+        return next(customError({
+            statusCode: 500,
+            message: "Failed to register admin"
+        }));
+    }
+};
+
 const adminLogin = async (req, res, next) => {
     const { email, password } = req.body;
-    const ADMIN_EMAIL = 'admin@gmail.com';
-    const ADMIN_PASSWORD = '123';
 
     try {
-        if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-            const token = jwt.sign({ role: 'admin' }, 'key');
+        const admin = await AdminModel.findOne({ email });
 
-            return res.status(200).json({ message: 'Admin logged in successfully', token });
-        } else {
+        if (!admin) {
             return res.status(401).json({ message: 'Invalid admin credentials' });
         }
+
+        const isMatch = await bcrypt.compare(password, admin.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Invalid admin credentials' });
+        }
+
+        const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_SECRET || 'key');
+        res.status(200).json({ message: 'Admin logged in successfully', token });
     } catch (err) {
         return next(customError({
             statusCode: 500,
             message: "Failed to login admin"
+        }));
+    }
+};
+
+const updateAdminPassword = async (req, res, next) => {
+    try {
+        const adminId = "686ed1d29b55b078c1ffbcd3"; 
+        const { oldPassword, newPassword, confirmPassword } = req.body;
+
+        if (!oldPassword || !newPassword || !confirmPassword) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ message: "Passwords do not match" });
+        }
+
+        const admin = await AdminModel.findById(adminId);
+        if (!admin) {
+            return res.status(404).json({ message: "Admin not found" });
+        }
+
+        const isMatch = await bcrypt.compare(oldPassword, admin.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Old password is incorrect" });
+        }
+
+        admin.password = newPassword;
+        await admin.save();
+
+        res.status(200).json({ message: "Password updated successfully" });
+
+    } catch (err) {
+        console.error("Error updating admin password:", err);
+        return next(customError({
+            statusCode: 500,
+            message: "Failed to update admin password"
         }));
     }
 };
@@ -146,7 +222,9 @@ const getProductsSortedBySoldCount = async (req, res, next) => {
 };
 
 module.exports = {
+    adminRegister,
     adminLogin,
+    updateAdminPassword,
     AllUsers,
     DelUser,
     AddProduct,

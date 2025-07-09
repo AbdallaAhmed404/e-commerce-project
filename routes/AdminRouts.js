@@ -1,10 +1,14 @@
 const express = require('express')
 const AdminRouter = express.Router()
 const isAdmin = require('../middlewares/isAdmin');
-const { AllUsers, DelUser, AddProduct, AllProduct, 
+const { adminRegister,updateAdminPassword,AllUsers, DelUser, AddProduct, AllProduct, 
         UpdateProduct, DeleteProduct,adminLogin,getProductsSortedBySoldCount } = require('../controllers/AdminController')
 
+AdminRouter.post('/register', adminRegister);
+
 AdminRouter.post('/login', adminLogin);
+
+AdminRouter.put('/updatepassword', updateAdminPassword);
 
 AdminRouter.get('/AllUsers',isAdmin, AllUsers);
 
