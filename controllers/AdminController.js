@@ -49,8 +49,8 @@ const adminLogin = async (req, res, next) => {
         }
 
         if (password !== admin.password) {
-        return res.status(401).json({ message: 'Invalid admin credentials' });
-}
+            return res.status(401).json({ message: 'Invalid admin credentials' });
+        }
 
         const token = jwt.sign({ id: admin._id, role: 'admin' }, process.env.JWT_SECRET || 'key');
         res.status(200).json({ message: 'Admin logged in successfully', token });
@@ -64,7 +64,7 @@ const adminLogin = async (req, res, next) => {
 
 const updateAdminPassword = async (req, res, next) => {
     try {
-        const adminId = "686ed1d29b55b078c1ffbcd3"; 
+        const adminId = "686ed1d29b55b078c1ffbcd3";
         const { oldPassword, newPassword, confirmPassword } = req.body;
 
         if (!oldPassword || !newPassword || !confirmPassword) {
@@ -80,10 +80,10 @@ const updateAdminPassword = async (req, res, next) => {
             return res.status(404).json({ message: "Admin not found" });
         }
 
-        const isMatch = await bcrypt.compare(oldPassword, admin.password);
-        if (!isMatch) {
+        if (oldPassword !== admin.password) {
             return res.status(401).json({ message: "Old password is incorrect" });
         }
+
 
         admin.password = newPassword;
         await admin.save();
